@@ -37,6 +37,47 @@
             .unimportant {
                 display: none;
             }
+
+            .header-bar {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 10px;
+            }
+
+            .header-left {
+                width: 100%;
+                justify-content: flex-start;
+            }
+
+            .header-right {
+                width: 100%;
+                justify-content: flex-end;
+            }
+
+            .ip-badge {
+                font-size: 12px;
+                padding: 4px 8px;
+                max-width: 120px;
+                overflow: hidden;
+                text-overflow: ellipsis;
+                white-space: nowrap;
+            }
+
+            .header-left .h4 {
+                font-size: 18px;
+            }
+        }
+
+        @media screen and (max-width: 768px) {
+            .ip-badge {
+                font-size: 12px;
+                padding: 4px 9px;
+            }
+
+            .header-icon {
+                width: 28px;
+                height: 28px;
+            }
         }
 
         #cameraDiv > label {
@@ -108,21 +149,62 @@
             justify-content: space-between;
             align-items: center;
             margin-bottom: 10px;
+            padding: 8px 0;
         }
 
         .btn-logout {
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             border: none;
             color: white;
-            padding: 8px 20px;
-            border-radius: 8px;
-            transition: transform 0.2s;
+            padding: 6px 14px;
+            border-radius: 6px;
+            font-size: 13px;
+            font-weight: 500;
+            transition: all 0.2s;
         }
 
         .btn-logout:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.3);
+            transform: translateY(-1px);
+            box-shadow: 0 3px 10px rgba(102, 126, 234, 0.25);
             color: white;
+        }
+
+        .btn-logout:active {
+            transform: translateY(0);
+        }
+
+        .header-left {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .header-icon {
+            width: 32px;
+            height: 32px;
+        }
+
+        .header-right {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .ip-badge {
+            background-color: #f8f9fa;
+            border: 1px solid #e9ecef;
+            border-radius: 6px;
+            padding: 5px 11px;
+            font-size: 13px;
+            color: #6c757d;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .ip-badge i {
+            color: #667eea;
+            font-size: 14px;
         }
     </style>
 
@@ -130,10 +212,19 @@
 <body>
 <div class="container-lg mg-top6">
     <div class="header-bar">
-        <p class="h4 mb-0">小米摄像头 NAS 视频查看工具</p>
-        <button class="btn btn-logout" onclick="logout()">
-            <i class="bi bi-box-arrow-right"></i> <span class="nothing">退出登录</span>
-        </button>
+        <div class="header-left">
+            <img src="/images/camera.svg" alt="摄像头图标" class="header-icon">
+            <p class="h4 mb-0">小米摄像头 NAS 视频查看工具</p>
+        </div>
+        <div class="header-right">
+            <div class="ip-badge">
+                <i class="bi bi-globe"></i>
+                <span id="ipAddress">加载中...</span>
+            </div>
+            <button class="btn btn-logout" onclick="logout()">
+                <i class="bi bi-box-arrow-right"></i> <span class="nothing">退出登录</span>
+            </button>
+        </div>
     </div>
 </div>
 
@@ -244,6 +335,7 @@
         minScreenFold();
         initVideoWidth();
         initCamera();
+        loadIpAddress();
     });
 
     function initVideoWidth() {
@@ -485,6 +577,18 @@
                 }
             });
         }
+    }
+
+    function loadIpAddress() {
+        $.get("/auth/ip", function(result) {
+            if (result.ip) {
+                $("#ipAddress").text(result.ip);
+            } else {
+                $("#ipAddress").text("未知");
+            }
+        }).fail(function() {
+            $("#ipAddress").text("获取失败");
+        });
     }
 </script>
 

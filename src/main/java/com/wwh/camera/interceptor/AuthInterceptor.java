@@ -34,10 +34,11 @@ public class AuthInterceptor implements HandlerInterceptor {
         String uri = request.getRequestURI();
         String ip = getClientIp(request);
 
-        log.debug("请求拦截：URI={}, IP={}", uri, ip);
+        log.debug("处理请求：{} 来自 {}", uri, ip);
 
         // 检查 IP 是否被锁定
         if (IpLockUtil.isLocked(ip, securityProperties.getLockTime())) {
+            log.warn("拒绝访问：IP {} 已被锁定，请求路径：{}", ip, uri);
             if (isAjaxRequest(request)) {
                 response.setStatus(HttpServletResponse.SC_FORBIDDEN);
                 response.setContentType("application/json;charset=UTF-8");
@@ -59,7 +60,8 @@ public class AuthInterceptor implements HandlerInterceptor {
             return true;
         }
 
-        // 未登录
+        // 未登录，拒绝访问
+        log.info("拒绝访问：IP {} 未登录，请求路径：{}", ip, uri);
         if (isAjaxRequest(request)) {
             response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
             response.setContentType("application/json;charset=UTF-8");

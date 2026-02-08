@@ -26,6 +26,7 @@ public class LoginController {
     private SecurityProperties securityProperties;
 
     private static final String SESSION_KEY = "loggedIn";
+    private static final String SESSION_IP_KEY = "clientIp";
 
     /**
      * 登录页面
@@ -62,6 +63,8 @@ public class LoginController {
             boolean locked = IpLockUtil.recordFail(ip, securityProperties.getMaxFailCount(), securityProperties.getLockTime());
             int remainingAttempts = IpLockUtil.getRemainingAttempts(ip, securityProperties.getMaxFailCount());
 
+            log.warn("登录失败：IP={}，密码错误，剩余尝试次数：{}", ip, remainingAttempts);
+
             result.put("success", false);
 
             if (locked) {
@@ -80,6 +83,7 @@ public class LoginController {
         // 登录成功，记录到 session
         HttpSession session = request.getSession(true);
         session.setAttribute(SESSION_KEY, true);
+        session.setAttribute(SESSION_IP_KEY, ip);
         session.setMaxInactiveInterval(securityProperties.getSessionTimeout());
 
         // 重置失败次数
@@ -111,13 +115,37 @@ public class LoginController {
     @PostMapping("/logout")
     @ResponseBody
     public Map<String, Object> logout(HttpServletRequest request) {
+        String ip = getClientIp(request);
         HttpSession session = request.getSession(false);
         if (session != null) {
             session.invalidate();
         }
+        log.info("用户退出登录，IP：{}", ip);
         Map<String, Object> result = new HashMap<>();
         result.put("success", true);
         result.put("message", "已退出登录");
+        return result;
+    }
+
+    /**
+     * 获取客户端IP地址
+     */
+    @GetMapping("/ip")
+    @ResponseBody
+    public Map<String, Object> getIp(HttpServletRequest request) {
+        Map<String, Object> result = new HashMap<>();
+        HttpSession session = request.getSession(false);
+        String ip = null;
+        
+        if (session != null) {
+            ip = (String) session.getAttribute(SESSION_IP_KEY);
+        }
+        
+        if (ip == null) {
+            ip = getClientIp(request);
+        }
+        
+        result.put("ip", ip);
         return result;
     }
 

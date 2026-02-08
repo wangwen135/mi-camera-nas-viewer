@@ -46,8 +46,6 @@ public class CameraVideoController {
 
     @GetMapping("/list")
     public List<Map<String, String>> list() {
-        log.debug("获取摄像头相关配置");
-
         List<CameraConfig> list = cameraVideoService.getCameraConfig();
 
         return list.stream().map(cc -> {
@@ -141,7 +139,7 @@ public class CameraVideoController {
                                @PathVariable String minute,
                                @RequestParam(required = false) String op) {
 
-        log.debug("请求视频：{} {}:{}:{}", code, date, hour, minute);
+        log.debug("访问视频：摄像头={}, 时间={}-{}:{}", code, date, hour, minute);
 
         // 检查 ETag，支持 304 缓存
         String rEtag = webRequest.getHeader("If-None-Match");
