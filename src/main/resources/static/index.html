@@ -1,0 +1,492 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <title>小米摄像头视频查看工具</title>
+
+    <!-- Favicon -->
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg">
+
+    <!-- Bootstrap CSS -->
+    <link href="/bootstrap/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Bootstrap Icons -->
+    <link href="/bootstrap/icons/font/bootstrap-icons.min.css" rel="stylesheet">
+
+    <style>
+
+        @media screen and (min-width: 768px) {
+            #cameraDiv > label {
+                margin-right: 2rem;
+            }
+        }
+
+        @media screen and (max-width: 992px) {
+            /*小于992的屏幕，不展示*/
+            .nothing {
+                display: none;
+            }
+        }
+
+        @media screen and (max-width: 420px) {
+            #cameraDiv > label {
+                margin-right: 2PX;
+            }
+
+            .unimportant {
+                display: none;
+            }
+        }
+
+        #cameraDiv > label {
+            border-radius: 1rem 1rem 0rem 0rem;
+            border-bottom: hidden;
+        }
+
+        #dateDiv > label {
+            width: 8rem;
+        }
+
+        #hourDiv > label {
+            width: 2.7rem;
+            border-radius: 0rem;
+        }
+
+        #minuteDiv > label {
+            width: 2.7rem;
+            border-radius: 0rem;
+        }
+
+        #controlBar > div {
+            display: inline-block;
+            margin-right: 24px;
+        }
+
+        .badge-my1 {
+            background-color: #6c757d;
+            padding: 4px;
+            vertical-align: middle;
+            border: 1px solid black;
+            color: white;
+        }
+
+        .font1 {
+            font-size: inherit;
+        }
+
+        .mg-top6 {
+            margin-top: 6px;
+        }
+
+        .pd-10 {
+            padding: 10px;
+        }
+
+        .a-center {
+            text-align: center;
+        }
+
+        .datetime-sel {
+            margin-left: 1rem;
+        }
+
+        .fold-display:not(.collapsed) + span {
+            display: none;
+        }
+
+        .fold-display:not(.collapsed):before {
+            content: "\f238";
+        }
+
+        .fold-display::before {
+            content: "\f22c";
+        }
+
+        .header-bar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+
+        .btn-logout {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border: none;
+            color: white;
+            padding: 8px 20px;
+            border-radius: 8px;
+            transition: transform 0.2s;
+        }
+
+        .btn-logout:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.3);
+            color: white;
+        }
+    </style>
+
+</head>
+<body>
+<div class="container-lg mg-top6">
+    <div class="header-bar">
+        <p class="h4 mb-0">小米摄像头 NAS 视频查看工具</p>
+        <button class="btn btn-logout" onclick="logout()">
+            <i class="bi bi-box-arrow-right"></i> <span class="nothing">退出登录</span>
+        </button>
+    </div>
+</div>
+
+<div class="container-lg">
+    <div id="cameraDiv">
+        <!-- 摄像头列表将动态加载 -->
+        <div class="text-center text-muted p-3">加载中...</div>
+    </div>
+</div>
+
+<div id="dateTimeSelectDiv" class="container-lg border border-primary rounded-3 pd-10">
+    <div>
+        <a id="dateDiv-a" href="#dateDiv" data-bs-toggle="collapse" class="h5 bi fold-display">日期</a>
+        <span id="dateSelect" class="datetime-sel">-</span>
+    </div>
+    <div id="dateDiv" class="collapse show hide">
+        <!-- 日期列表将动态加载 -->
+    </div>
+
+    <div class="mg-top6">
+        <a id="hourDiv-a" href="#hourDiv" data-bs-toggle="collapse" class="h5 bi fold-display">小时</a>
+        <span id="hourSelect" class="datetime-sel">-</span>
+    </div>
+    <div id="hourDiv" class="collapse show">
+        <!-- 小时列表将动态加载 -->
+    </div>
+
+    <div class="mg-top6">
+        <a id="minuteDiv-a" href="#minuteDiv" data-bs-toggle="collapse" class="h5 bi fold-display">分钟</a>
+        <span id="minuteSelect" class="datetime-sel">-</span>
+    </div>
+    <div id="minuteDiv" class="collapse show">
+        <!-- 分钟列表将动态加载 -->
+    </div>
+</div>
+
+<div id="controlBar" class="container-lg border mg-top6 a-center">
+    <div>
+        <span class="badge-my1"><i id="videoInfo" class="bi bi-film"> -</i></span>
+    </div>
+
+    <div>
+        <button id="btnPlayPause" class="btn btn-success" onclick="playPause()">
+            <i class="bi bi-play"><span class="nothing">播放</span></i>
+        </button>
+        <div style="width: 135px; display: inline-block">
+            <div class="input-group input-group-sm">
+                <input id="btnCurrentTime" type="number" class="form-control" step="0.01" min="0" max="100" value="0"
+                       required="true" title="鼠标滚轮控制逐帧播放效果">
+                <button type="submit" class="btn btn-success" onclick="skip()" title="跳转到指定位置">
+                    <i class="bi bi-skip-end-circle"></i>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <div>
+        <button class="btn btn-primary" onclick="makeBig()">
+            <i class="bi bi-zoom-in"><span class="nothing">放大</span></i>
+        </button>
+        <button class="btn btn-primary" onclick="makeSmall()">
+            <i class="bi bi-zoom-out"><span class="nothing">缩小</span></i>
+        </button>
+        <button class="btn btn-secondary" onclick="makeNormal()">
+            <i class="bi bi-fullscreen-exit"><span class="nothing">普通</span></i>
+        </button>
+        <span class="badge rounded-pill bg-light text-dark font1" style="min-width: 125px">
+            <i id="txtVideoWidth" class="bi bi-aspect-ratio">-</i>
+        </span>
+    </div>
+
+    <div>
+        <button class="btn btn-outline-dark" onclick="slowDown()">
+            <i class="bi bi-skip-backward"><span class="nothing">慢放</span></i>
+        </button>
+        <button class="btn btn-outline-success" onclick="normalSpeed()">
+            <i class="bi bi-skip-end"><span class="nothing">正常</span></i>
+        </button>
+        <button class="btn btn-outline-primary" onclick="speedUp()">
+            <i class="bi bi-skip-forward"><span class="nothing">快放</span></i>
+        </button>
+        <span class="badge rounded-pill bg-light text-dark" style="width: 60px">
+            <span id="txtVideoRate">1</span>倍速
+        </span>
+    </div>
+
+    <button class="btn btn-light" onclick="downloadVideo()">
+        <i class="bi bi-cloud-download"><span class="nothing">下载视频</span></i>
+    </button>
+</div>
+
+<div class="a-center">
+    <video id="cVideo" controls="true" src="">
+        您的浏览器不支持 HTML5 video 标签。
+    </video>
+</div>
+
+<!-- jQuery -->
+<script src="/js/jquery-3.6.1.min.js"></script>
+<!-- Bootstrap Bundle -->
+<script src="/bootstrap/js/bootstrap.bundle.min.js"></script>
+
+<script>
+    const myVideo = document.getElementById("cVideo");
+    window.onresize = initVideoWidth;
+
+    $(document).ready(function () {
+        minScreenFold();
+        initVideoWidth();
+        initCamera();
+    });
+
+    function initVideoWidth() {
+        let divWidth = document.querySelector("#dateTimeSelectDiv").clientWidth;
+        myVideo.width = divWidth;
+        updateVideoWidthTxt();
+    }
+
+    function minScreenFold() {
+        if (document.body.clientWidth > 420) {
+            return;
+        }
+        let arr = ['#dateDiv-a', '#hourDiv-a', '#minuteDiv-a'];
+        arr.forEach(function (val, index) {
+            let classList = document.querySelector(val).classList;
+            classList.add('collapsed');
+        });
+
+        arr = ['#dateDiv', '#hourDiv', '#minuteDiv'];
+        arr.forEach(function (val, index) {
+            let classList = document.querySelector(val).classList;
+            classList.remove('show');
+        });
+    }
+
+    function initCamera() {
+        $.get("/camera/list", function (result) {
+            let cDiv = $("#cameraDiv");
+            cDiv.empty();
+            if (result.length === 0) {
+                cDiv.html('<div class="text-center text-warning p-3">未配置摄像头，请在 application.yml 中添加配置</div>');
+                return;
+            }
+            $.each(result, function (index, e) {
+                cDiv.append('<input type="radio" class="btn-check" name="brd-camera" id="camera-' + index + '" autocomplete="off" value="' + e.code + '" onclick="onCameraChange()">');
+                cDiv.append('<label class="btn btn-outline-primary" for="camera-' + index + '">' + e.name + ' <i class="bi bi-camera-video unimportant"/></label>');
+            });
+            $('#camera-0').attr("checked", 'checked');
+            onCameraChange();
+        }).fail(function() {
+            $("#cameraDiv").html('<div class="text-center text-danger p-3">加载摄像头列表失败，请检查后端服务是否正常运行</div>');
+        });
+    }
+
+    function onCameraChange() {
+        let cameraId = $("#cameraDiv > input:radio:checked").val();
+        let url = "/camera/video/date?code=" + cameraId;
+        $.get(url, function (result) {
+            let dDiv = $("#dateDiv");
+            dDiv.empty();
+            $.each(result, function (index, e) {
+                dDiv.append('<input type="radio" class="btn-check" name="brd-date" id="date-' + index + '" autocomplete="off" value="' + e + '" onclick="onDateChange()">');
+                dDiv.append('<label class="btn btn-outline-primary" for="date-' + index + '">' + e + '</label>');
+            });
+            $("#dateDiv > input:radio:last").attr("checked", 'checked');
+            onDateChange();
+        });
+    }
+
+    function onDateChange() {
+        let cameraId = $("#cameraDiv > input:radio:checked").val();
+        let date = $("#dateDiv > input:radio:checked").val();
+        document.querySelector("#dateSelect").innerHTML = date;
+
+        let url = "/camera/video/hour?code=" + cameraId + "&date=" + date;
+        $.get(url, function (result) {
+            let hDiv = $("#hourDiv");
+            hDiv.empty();
+            $.each(result, function (index, e) {
+                hDiv.append('<input type="radio" class="btn-check" name="brd-hour" id="hour-' + index + '" autocomplete="off" value="' + e + '" onclick="onHourChange()">');
+                hDiv.append('<label class="btn btn-outline-primary" for="hour-' + index + '">' + e + '</label>');
+            });
+            $("#hourDiv > input:radio:last").attr("checked", 'checked');
+            onHourChange();
+        });
+    }
+
+    function onHourChange() {
+        let cameraId = $("#cameraDiv > input:radio:checked").val();
+        let date = $("#dateDiv > input:radio:checked").val();
+        let hour = $("#hourDiv > input:radio:checked").val();
+        document.querySelector("#hourSelect").innerHTML = hour;
+
+        let url = "/camera/video/minute?code=" + cameraId + "&date=" + date + "&hour=" + hour;
+        $.get(url, function (result) {
+            let mDiv = $("#minuteDiv");
+            mDiv.empty();
+            $.each(result, function (index, e) {
+                mDiv.append('<input type="radio" class="btn-check" name="brd-minute" id="minute-' + index + '" autocomplete="off" value="' + e + '" onclick="onMinuteChange()">');
+                mDiv.append('<label class="btn btn-outline-primary" for="minute-' + index + '">' + e + '</label>');
+            });
+            $("#minuteDiv > input:radio:first").attr("checked", 'checked');
+            onMinuteChange();
+        });
+    }
+
+    let firstLoad = true;
+    let downloadVideoUrl;
+
+    function onMinuteChange() {
+        let cameraId = $("#cameraDiv > input:radio:checked").val();
+        let date = $("#dateDiv > input:radio:checked").val();
+        let hour = $("#hourDiv > input:radio:checked").val();
+        let minute = $("#minuteDiv > input:radio:checked").val();
+        document.querySelector("#minuteSelect").innerHTML = minute;
+
+        let url = "/camera/video/" + cameraId + "/" + date + "-" + hour + "-" + minute + ".mp4";
+        downloadVideoUrl = url + "?op=download";
+
+        let oldRate = myVideo.playbackRate;
+        myVideo.src = url;
+        myVideo.load();
+        myVideo.playbackRate = oldRate;
+
+        if (firstLoad) {
+            firstLoad = false;
+        } else {
+            myVideo.play();
+        }
+    }
+
+    let btnCT = document.getElementById("btnCurrentTime");
+    btnCT.onmousewheel = mousewheel;
+    btnCT.onchange = valueChange;
+
+    function mousewheel(e) {
+        e.preventDefault();
+        let v = parseFloat(this.value);
+        if (e.wheelDelta < 0) {
+            if (v <= 0) return;
+            v = v - 0.01;
+        } else {
+            if (v >= 100) return;
+            v = v + 0.01;
+        }
+        let v2 = v.toFixed(2);
+        this.value = v2;
+        myVideo.currentTime = v2;
+    }
+
+    function valueChange() {
+        myVideo.currentTime = this.value;
+    }
+
+    myVideo.addEventListener('play', function () {
+        $("#btnPlayPause").html('<i class="bi bi-pause"><span class="nothing">暂停</span></i>');
+        $("#btnCurrentTime").val(myVideo.currentTime);
+    });
+
+    myVideo.addEventListener('pause', function () {
+        $("#btnPlayPause").html('<i class="bi bi-play"><span class="nothing">播放</span></i>');
+        $("#btnCurrentTime").val(myVideo.currentTime);
+    });
+
+    myVideo.addEventListener('ratechange', function () {
+        $("#txtVideoRate").text(myVideo.playbackRate);
+    });
+
+    myVideo.addEventListener('timeupdate', function () {
+        $("#btnCurrentTime").val(myVideo.currentTime);
+    });
+
+    myVideo.addEventListener("loadedmetadata", function () {
+        $("#videoInfo").text(" " + myVideo.videoWidth + "x" + myVideo.videoHeight);
+        updateVideoWidthTxt();
+    });
+
+    myVideo.addEventListener('ended', function (e) {
+        let mList = $("#minuteDiv  input:radio:checked").nextAll("input:radio");
+        if (mList.length > 0) {
+            mList[0].click();
+        }
+    });
+
+    function playPause() {
+        if (myVideo.paused) {
+            myVideo.play();
+            $("#btnPlayPause").html('<i class="bi bi-pause">暂停</i>');
+        } else {
+            myVideo.pause();
+            $("#btnPlayPause").html('<i class="bi bi-play">播放</i>');
+        }
+    }
+
+    function skip() {
+        myVideo.currentTime = $("#btnCurrentTime").val();
+    }
+
+    function updateVideoWidthTxt() {
+        let text = myVideo.clientWidth + "x" + myVideo.clientHeight;
+        $("#txtVideoWidth").text(text);
+    }
+
+    function makeBig() {
+        if (myVideo.clientWidth >= 10080) return;
+        myVideo.width = myVideo.clientWidth + 100;
+        updateVideoWidthTxt();
+    }
+
+    function makeSmall() {
+        if (myVideo.clientWidth <= 100) return;
+        myVideo.width = myVideo.clientWidth - 100;
+        updateVideoWidthTxt();
+    }
+
+    function makeNormal() {
+        initVideoWidth();
+    }
+
+    function speedUp() {
+        if (myVideo.playbackRate >= 16) return;
+        myVideo.playbackRate = myVideo.playbackRate + 0.25;
+    }
+
+    function slowDown() {
+        if (myVideo.playbackRate <= 0.25) return;
+        myVideo.playbackRate = myVideo.playbackRate - 0.25;
+    }
+
+    function normalSpeed() {
+        myVideo.playbackRate = 1;
+    }
+
+    function downloadVideo() {
+        window.location.href = downloadVideoUrl;
+    }
+
+    function logout() {
+        if (confirm('确定要退出登录吗？')) {
+            $.ajax({
+                url: '/auth/logout',
+                method: 'POST',
+                success: function() {
+                    window.location.href = '/auth/login';
+                },
+                error: function() {
+                    // 即使失败也跳转到登录页
+                    window.location.href = '/auth/login';
+                }
+            });
+        }
+    }
+</script>
+
+</body>
+</html>

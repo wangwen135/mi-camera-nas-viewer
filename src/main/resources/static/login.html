@@ -1,0 +1,431 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>登录 - 小米摄像头视频查看工具</title>
+
+    <!-- Favicon -->
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg">
+    <!-- Bootstrap CSS -->
+    <link href="/bootstrap/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Bootstrap Icons -->
+    <link href="/bootstrap/icons/font/bootstrap-icons.min.css" rel="stylesheet">
+
+    <style>
+        body {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: space-between;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            padding: 20px;
+        }
+
+        .login-container {
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            padding: 50px 40px;
+            width: 100%;
+            max-width: 420px;
+            animation: fadeInUp 0.6s ease-out;
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .login-header {
+            text-align: center;
+            margin-bottom: 35px;
+        }
+
+        .login-header h2 {
+            color: #333;
+            font-weight: 700;
+            margin-bottom: 8px;
+            font-size: 26px;
+        }
+
+        .login-header p {
+            color: #666;
+            font-size: 15px;
+        }
+
+        .form-floating {
+            margin-bottom: 25px;
+        }
+
+        .form-floating input {
+            border: 2px solid #e0e0e0;
+            border-radius: 12px;
+            transition: all 0.3s;
+            font-size: 15px;
+        }
+
+        .form-floating input:focus {
+            border-color: #667eea;
+            box-shadow: 0 0 0 0.2rem rgba(102, 126, 234, 0.25);
+        }
+
+        .btn-login {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border: none;
+            border-radius: 12px;
+            padding: 14px;
+            font-weight: 600;
+            transition: all 0.3s;
+            font-size: 16px;
+        }
+
+        .btn-login:hover:not(:disabled) {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(102, 126, 234, 0.4);
+        }
+
+        .btn-login:active:not(:disabled) {
+            transform: translateY(0);
+        }
+
+        .btn-login:disabled {
+            background: #ccc;
+            transform: none;
+            opacity: 0.7;
+        }
+
+        .alert {
+            border-radius: 12px;
+            margin-bottom: 25px;
+            border: none;
+        }
+
+        .security-info {
+            background: linear-gradient(135deg, #f8f9fa 0%, #f0f0f5 100%);
+            border-radius: 12px;
+            padding: 18px;
+            margin-top: 25px;
+            font-size: 13px;
+            color: #666;
+            border: 1px solid #e8e8e8;
+        }
+
+        .security-info i {
+            color: #667eea;
+        }
+
+        .attempts-remaining {
+            font-weight: 700;
+            color: #764ba2;
+        }
+
+        .locked-message {
+            background: linear-gradient(135deg, #fff9e6 0%, #fff3cd 100%);
+            border: 2px solid #ffc107;
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 25px;
+            text-align: center;
+        }
+
+        .locked-message i {
+            font-size: 42px;
+            color: #ffc107;
+            margin-bottom: 12px;
+        }
+
+        .countdown {
+            font-weight: 700;
+            color: #dc3545;
+            font-size: 20px;
+        }
+
+        .spinner-border-sm {
+            width: 1rem;
+            height: 1rem;
+        }
+
+        .page-title {
+            text-align: center;
+            margin-top: auto;
+            margin-bottom: 40px;
+            animation: fadeInDown 0.6s ease-out;
+        }
+
+        @keyframes fadeInDown {
+            from {
+                opacity: 0;
+                transform: translateY(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .page-title h1 {
+            color: white;
+            font-size: 32px;
+            font-weight: 700;
+            text-shadow: 0 3px 15px rgba(0, 0, 0, 0.2);
+            margin: 0;
+            letter-spacing: 0.5px;
+        }
+
+        .camera-icon {
+            width: 80px;
+            height: 80px;
+            margin-bottom: 20px;
+            /*animation: float 3s ease-in-out infinite;*/
+        }
+
+        @keyframes float {
+            0%, 100% {
+                transform: translateY(0);
+            }
+            50% {
+                transform: translateY(-8px);
+            }
+        }
+
+        .footer-signature {
+            text-align: center;
+            margin-top: auto;
+            width: 100%;
+            animation: fadeIn 1s ease-out 0.3s both;
+        }
+
+        .footer-signature small {
+            color: rgba(255, 255, 255, 0.7);
+            font-weight: 500;
+        }
+    </style>
+</head>
+<body>
+<!-- 页面标题 -->
+<div class="page-title">
+    <h1>小米摄像头 NAS 视频查看工具</h1>
+</div>
+
+<div class="login-container">
+    <div class="login-header">
+        <!-- 摄像头图标 -->
+        <img src="/images/camera.svg" alt="摄像头图标" class="camera-icon">
+        <h2>身份验证</h2>
+        <p>请输入访问密码</p>
+    </div>
+
+    <!-- 锁定提示 -->
+    <div id="lockedMessage" class="locked-message" style="display: none;">
+        <i class="bi bi-lock-fill"></i>
+        <div>
+            <strong>IP 已被锁定</strong>
+        </div>
+        <div class="mt-2">
+            请在 <span class="countdown" id="countdown">--</span> 秒后重试
+        </div>
+    </div>
+
+    <!-- 错误提示 -->
+    <div id="alertMessage" class="alert alert-danger" style="display: none;" role="alert">
+        <i class="bi bi-exclamation-triangle-fill"></i>
+        <span id="alertText"></span>
+    </div>
+
+    <!-- 登录表单 -->
+    <form id="loginForm">
+        <div class="form-floating">
+            <input type="password" class="form-control" id="password" placeholder="请输入密码" required autocomplete="off">
+            <label for="password"><i class="bi bi-key"></i> 访问密码</label>
+        </div>
+
+        <button type="submit" class="btn btn-primary btn-login w-100" id="loginBtn">
+            <span class="normal-state"><i class="bi bi-box-arrow-in-right"></i> 登录</span>
+            <span class="loading-state" style="display: none;">
+                <span class="spinner-border spinner-border-sm me-2"></span>
+                登录中...
+            </span>
+        </button>
+    </form>
+
+    <!-- 安全提示 -->
+    <div class="security-info">
+        <div><i class="bi bi-shield-check"></i> 系统启用了安全保护</div>
+        <div class="mt-2">
+            <small>
+                • 密码错误 <span id="maxAttempts">3</span> 次将锁定 IP<br>
+                • 锁定时长：10 分钟<br>
+                • Session 有效期：30 分钟
+            </small>
+        </div>
+    </div>
+</div>
+
+<!-- jQuery -->
+<script src="/js/jquery-3.6.1.min.js"></script>
+<!-- Bootstrap Bundle -->
+<script src="/bootstrap/js/bootstrap.bundle.min.js"></script>
+
+<script>
+    $(document).ready(function() {
+        // 检查 URL 参数是否显示锁定消息
+        const urlParams = new URLSearchParams(window.location.search);
+        const isLocked = urlParams.get('locked');
+
+        if (isLocked === 'true') {
+            checkLockStatus();
+        }
+
+        // 密码输入框聚焦
+        $('#password').focus();
+
+        // 表单提交
+        $('#loginForm').on('submit', function(e) {
+            e.preventDefault();
+            login();
+        });
+
+        // Enter 键提交
+        $('#password').on('keypress', function(e) {
+            if (e.which === 13) {
+                login();
+            }
+        });
+    });
+
+    function login() {
+        const password = $('#password').val().trim();
+
+        if (!password) {
+            showAlert('请输入密码', 'warning');
+            return;
+        }
+
+        // 显示加载状态
+        setLoginLoading(true);
+        hideAlert();
+
+        $.ajax({
+            url: '/auth/login',
+            method: 'POST',
+            data: { password: password },
+            success: function(response) {
+                setLoginLoading(false);
+
+                if (response.success) {
+                    showAlert('登录成功，正在跳转...', 'success');
+                    setTimeout(function() {
+                        window.location.href = '/';
+                    }, 500);
+                } else {
+                    $('#password').val('');
+
+                    if (response.locked) {
+                        // IP 已被锁定
+                        showLockedMessage(response.remainingTime);
+                    } else {
+                        // 密码错误
+                        showAlert(response.message, 'danger');
+                        updateAttemptsInfo(response.remainingAttempts);
+                    }
+                }
+            },
+            error: function() {
+                setLoginLoading(false);
+                showAlert('登录失败，请检查网络连接', 'danger');
+            }
+        });
+    }
+
+    function checkLockStatus() {
+        $.ajax({
+            url: '/auth/check',
+            method: 'GET',
+            success: function(response) {
+                if (response.locked) {
+                    showLockedMessage(response.remainingTime);
+                }
+            }
+        });
+    }
+
+    function showLockedMessage(remainingTime) {
+        $('#lockedMessage').show();
+        $('#loginForm').hide();
+        startCountdown(remainingTime);
+    }
+
+    let countdownInterval;
+
+    function startCountdown(seconds) {
+        clearInterval(countdownInterval);
+
+        function updateCountdown() {
+            $('#countdown').text(seconds);
+
+            if (seconds <= 0) {
+                clearInterval(countdownInterval);
+                location.reload();
+            }
+
+            seconds--;
+        }
+
+        updateCountdown();
+        countdownInterval = setInterval(updateCountdown, 1000);
+    }
+
+    function setLoginLoading(loading) {
+        const btn = $('#loginBtn');
+        const passwordInput = $('#password');
+
+        if (loading) {
+            btn.prop('disabled', true);
+            passwordInput.prop('disabled', true);
+            btn.find('.normal-state').hide();
+            btn.find('.loading-state').show();
+        } else {
+            btn.prop('disabled', false);
+            passwordInput.prop('disabled', false);
+            btn.find('.normal-state').show();
+            btn.find('.loading-state').hide();
+            passwordInput.focus();
+        }
+    }
+
+    function showAlert(message, type) {
+        const alert = $('#alertMessage');
+        const alertText = $('#alertText');
+
+        alert.removeClass('alert-success alert-danger alert-warning alert-info');
+        alert.addClass('alert-' + type);
+
+        alertText.text(message);
+        alert.fadeIn();
+    }
+
+    function hideAlert() {
+        $('#alertMessage').fadeOut();
+    }
+
+    function updateAttemptsInfo(remaining) {
+        $('.attempts-remaining').text(remaining);
+    }
+</script>
+
+<!-- 署名 -->
+<div class="footer-signature">
+    <small>By WWH @ 2022</small>
+</div>
+
+</body>
+</html>

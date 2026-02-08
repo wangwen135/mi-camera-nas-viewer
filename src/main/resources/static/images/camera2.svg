@@ -1,0 +1,19 @@
+<svg width="202" height="202" xmlns="http://www.w3.org/2000/svg">
+
+    <g>
+        <title>background</title>
+        <rect fill="none" id="canvas_background" height="204" width="204" y="-1" x="-1"/>
+    </g>
+    <g>
+        <title>Layer 1</title>
+        <ellipse cx="100.47136" cy="180.59331" rx="71" ry="18" fill="none" stroke-width="2" id="svg_4" stroke="#D0D0D0"/>
+        <ellipse cx="100.47137" cy="179.53379" rx="71" ry="18" fill="#DDDDDD" id="svg_2"/>
+        <ellipse cx="100.47137" cy="175.78379" rx="51" ry="12" fill="#F5F5F5" id="svg_3"/>
+        <rect x="84.97137" y="109.28379" width="31" height="65.99999" rx="15" fill="#F2F2F2" id="svg_5" stroke="null"/>
+        <circle cx="100.47137" cy="64.78379" r="61" fill="#FFFFFF" stroke="#E6E6E6" stroke-width="4" id="svg_6"/>
+        <circle cx="100.47137" cy="64.78379" r="38" fill="#2B2B2B" id="svg_7"/>
+        <circle cx="100.45946" cy="64.78379" r="20" fill="#3A3A3A" id="svg_8"/>
+        <circle cx="90.45946" cy="54.78379" r="8" fill="#6E6E6E" opacity="0.6" id="svg_9"/>
+        <circle cx="100.47137" cy="109.78379" r="5" fill="#00C853" id="svg_10"/>
+    </g>
+</svg>
