@@ -1,0 +1,69 @@
+server:
+  port: 8866
+  servlet:
+    # Session 配置
+    session:
+      timeout: 1800  # 30分钟
+
+spring:
+  application:
+    name: mi-camera-nas-viewer
+
+# ====================
+# 摄像头视频配置
+# ====================
+camera:
+  # 视频文件存储基础路径（NAS路径）
+  base-path: H:\监控\xiaomi_camera_videos
+
+  # 摄像头列表配置
+  cameras:
+    - name: 阳台摄像头
+      code: 303abc123456
+      enabled: true
+    - name: 客厅摄像头
+      code: 1bc487654321
+      enabled: true
+    # 添加更多摄像头...
+    # - name: 摄像头名称
+    #   code: 摄像头代码
+    #   enabled: true
+
+# ====================
+# 安全配置
+# ====================
+security:
+  # 访问密码
+  password: admin123
+  # Session 过期时间（秒），默认30分钟
+  session-timeout: 1800
+  # 最大登录失败次数
+  max-fail-count: 3
+  # IP 锁定时间（秒），默认10分钟
+  lock-time: 600
+
+# ====================
+# 日志配置
+# ====================
+logging:
+  # 日志级别设置
+  # 级别从低到高：TRACE < DEBUG < INFO < WARN < ERROR
+  # 设置某个级别后，只记录该级别及以上的日志
+  level:
+    # 应用代码日志级别（开发调试建议使用 DEBUG）
+    com.wwh.camera: DEBUG
+    # Spring 框架日志级别（建议使用 INFO，避免日志过多）
+    org.springframework.web: INFO
+  # 日志文件配置
+  file:
+    # 日志文件路径（相对于 jar 包所在目录）
+    name: ./log/mi-camera-nas-viewer.log
+  # 日志滚动策略配置（Spring Boot 2.4+ 推荐配置）
+  logback:
+    rollingpolicy:
+      # 单个日志文件最大大小，超过后自动创建新文件
+      max-file-size: 100MB
+      # 日志文件保留天数，超过该天数的日志会自动删除
+      max-history: 30
+      # 日志文件名格式（滚动后的文件）
+      file-name-pattern: ./log/mi-camera-nas-viewer.%d{yyyy-MM-dd}.%i.log
