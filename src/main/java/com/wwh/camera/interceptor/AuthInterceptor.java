@@ -81,7 +81,21 @@ public class AuthInterceptor implements HandlerInterceptor {
      */
     private boolean isAjaxRequest(HttpServletRequest request) {
         String requestedWith = request.getHeader("X-Requested-With");
-        return "XMLHttpRequest".equals(requestedWith) || request.getRequestURI().startsWith("/camera/");
+        if ("XMLHttpRequest".equals(requestedWith)) {
+            return true;
+        }
+        
+        String uri = request.getRequestURI();
+        if (uri.startsWith("/camera/") || uri.startsWith("/auth/check") || uri.startsWith("/auth/ip")) {
+            return true;
+        }
+        
+        String accept = request.getHeader("Accept");
+        if (accept != null && accept.contains("application/json")) {
+            return true;
+        }
+        
+        return false;
     }
 
     /**

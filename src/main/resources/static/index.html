@@ -320,6 +320,31 @@
     const myVideo = document.getElementById("cVideo");
     window.onresize = initVideoWidth;
 
+    $.ajaxSetup({
+        statusCode: {
+            401: function() {
+                window.location.href = '/auth/login';
+            },
+            403: function() {
+                window.location.href = '/auth/login';
+            }
+        }
+    });
+
+    document.addEventListener('visibilitychange', function() {
+        if (!document.hidden) {
+            checkSession();
+        }
+    });
+
+    function checkSession() {
+        $.get("/auth/check").fail(function(xhr) {
+            if (xhr.status === 401 || xhr.status === 403 || xhr.status === 0) {
+                window.location.href = '/auth/login';
+            }
+        });
+    }
+
     $(document).ready(function () {
         minScreenFold();
         initVideoWidth();
