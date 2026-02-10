@@ -30,19 +30,24 @@
             transition: all 0.5s ease;
         }
 
-        /*#cameraDiv > label:hover {*/
-        /*    background-color: rgba(13, 110, 253, 0.1);*/
-        /*    transform: translateY(-1px);*/
-        /*}*/
-
         #cameraDiv > input:checked + label {
-            /*background-color: #0d6efd;*/
-            /*border-color: #0d6efd;*/
-            /*color: white;*/
             box-shadow: 0 2px 8px rgba(13, 110, 253, 0.9);
         }
         #cameraDiv > input:checked + label > i {
-            color: #FF4567;
+            animation: blueGreenFade 1s ease-in-out infinite alternate;
+        }
+        /*蓝绿闪烁*/
+        @keyframes blueGreenFade {
+            from { color: #0f0; }
+            to { color: #00f; }
+        }
+        /*默认是空心图标*/
+        .dynamic-camera-icon::before {
+            content:"\f21f"
+        }
+        /*选中后变成实心图标*/
+        #cameraDiv > input:checked + label > .dynamic-camera-icon::before {
+            content: "\f21c";
         }
 
         #dateDiv > label {
@@ -109,7 +114,7 @@
             justify-content: space-between;
             align-items: center;
             margin-bottom: 10px;
-            padding: 8px 0;
+            /*padding: 8px 0;*/
         }
 
         .btn-logout {
@@ -118,7 +123,7 @@
             padding: 6px 14px;
             border-radius: 6px;
             font-size: 13px;
-            font-weight: 500;            
+            font-weight: 500;
         }
 
         .btn-logout:hover {
@@ -134,8 +139,8 @@
         }
 
         .header-icon {
-            width: 32px;
-            height: 32px;
+            width: 50px;
+            height: 50px;
         }
 
         .header-right {
@@ -176,8 +181,8 @@
             }
 
             .header-icon {
-                width: 28px;
-                height: 28px;
+                width: 38px;
+                height: 38px;
             }
         }
 
@@ -355,7 +360,7 @@
             }
             $.each(result, function (index, e) {
                 cDiv.append('<input type="radio" class="btn-check" name="brd-camera" id="camera-' + index + '" autocomplete="off" value="' + e.code + '" onclick="onCameraChange()">');
-                cDiv.append('<label class="btn btn-outline-primary" for="camera-' + index + '">' + e.name + ' <i class="bi bi-camera-video unimportant"/></label>');
+                cDiv.append('<label class="btn btn-outline-primary" for="camera-' + index + '">' + e.name + ' <i class="bi dynamic-camera-icon unimportant"/></label>');
             });
             $('#camera-0').attr("checked", 'checked');
             onCameraChange();
