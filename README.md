@@ -4,19 +4,43 @@
 
 这是一个用于查看存储在 NAS 服务器上的小米摄像头录像的 Web 应用工具。
 
-## 功能特性
+> 摄像头NAS存储设置
+> 进入米家 -> 点击小米摄像头 -> 存储设置 -> NAS网络存储
 
+## 系统界面截图
+
+### 登录界面
+![登录页面](screenshots/login.png)
+#### 登录失败时
+![登录失败](screenshots/login-fail.png)
+
+### 主页面
+![主页面](screenshots/main.png)
+#### 移动端主页面
+![移动端主页面](screenshots/mobile-main.png)
+
+
+## 功能特性
 - 摄像头列表配置（通过配置文件）
 - 按日期/小时/分钟浏览视频
 - 视频在线播放、下载
 - 播放速度控制、逐帧播放、画面缩放
 - 密码保护、IP 锁定机制
+- 移动端适配
 
 ## 快速开始
 
-### 1. 修改配置
+### 1. 下载并解压
 
-编辑 `src/main/resources/application.yml` 文件，配置以下内容：
+从 [GitHub Releases](../../releases) 下载最新版本的压缩包（tar/zip），解压到任意目录。
+
+### 2. 挂载 NAS 视频
+
+将 NAS 中的小米摄像头视频目录挂载到运行本程序的机器上，确保程序能正常读取视频文件。
+
+### 3. 修改配置
+
+编辑解压目录中的 `application.yml` 文件，配置以下内容：
 
 ```yaml
 # 摄像头视频配置
@@ -37,47 +61,20 @@ camera:
 security:
   # 访问密码（请修改为强密码）
   password: admin123
-  # Session 过期时间（秒），默认30分钟
-  session-timeout: 1800
-  # 最大登录失败次数
-  max-fail-count: 3
-  # IP 锁定时间（秒），默认10分钟
-  lock-time: 600
 ```
 
-```yaml
-# 日志配置
-logging:
-  level:
-    com.wwh.camera: DEBUG      # 应用代码日志级别
-    org.springframework.web: INFO  # 框架日志级别
-  file:
-    name: ./log/mi-camera-nas-viewer.log  # 日志文件路径
-  logback:
-    rollingpolicy:
-      max-file-size: 100MB     # 单个文件最大大小
-      max-history: 30          # 日志保留天数
-      file-name-pattern: ./log/mi-camera-nas-viewer.%d{yyyy-MM-dd}.%i.log
-```
+**⚠️ 安全提示**：务必修改默认密码，建议使用强密码（包含大小写字母、数字、特殊字符）。
 
+### 4. 启动程序
 
-**⚠️ 安全提示**：
-- 首次使用请务必修改默认密码
-- 建议使用强密码（包含大小写字母、数字、特殊字符）
-- 定期更换密码以提高安全性
+- **Windows**: 双击运行 `start.bat`
+- **Linux**: 执行 `./start.sh`
 
-### 2. 编译运行
+### 5. 访问应用
 
-```bash
-mvn clean package
-java -jar target/mi-camera-nas-viewer-1.0.0.jar
-```
+浏览器访问 `http://localhost:8866`，输入配置的密码即可使用。
 
-或在 IDE 中运行 `MiCameraNasViewerApplication` 主类。
-
-### 3. 访问应用
-
-浏览器访问 `http://localhost:8866`，输入密码登录即可使用。
+---
 
 ## 视频文件结构
 

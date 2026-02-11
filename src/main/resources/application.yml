@@ -18,7 +18,7 @@ camera:
 
   # 摄像头列表配置
   cameras:
-    - name: 阳台摄像头
+    - name: 门口摄像头
       code: 303abc123456
       enabled: true
     - name: 客厅摄像头
@@ -47,18 +47,16 @@ security:
 # ====================
 logging:
   # 日志级别设置
-  # 级别从低到高：TRACE < DEBUG < INFO < WARN < ERROR
-  # 设置某个级别后，只记录该级别及以上的日志
   level:
-    # 应用代码日志级别（开发调试建议使用 DEBUG）
+    # 应用代码日志级别
     com.wwh.camera: DEBUG
-    # Spring 框架日志级别（建议使用 INFO，避免日志过多）
+    # Spring 框架日志级别
     org.springframework.web: INFO
   # 日志文件配置
   file:
     # 日志文件路径（相对于 jar 包所在目录）
     name: ./log/mi-camera-nas-viewer.log
-  # 日志滚动策略配置（Spring Boot 2.4+ 推荐配置）
+  # 日志滚动策略配置
   logback:
     rollingpolicy:
       # 单个日志文件最大大小，超过后自动创建新文件
