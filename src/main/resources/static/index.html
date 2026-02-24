@@ -16,6 +16,81 @@
 
     <style>
 
+        :root {
+            --bs-border-color: #0d6efd;
+
+            /* --bs-btn-bg: #000;
+            --bs-btn-background: #000;
+            --btn-outline-primary-dark-color: #6ea8fe;
+            --btn-outline-primary-dark-hover-bg: #0a58ca;
+            --btn-outline-primary-checked-shadow: rgba(110, 168, 254, 0.9);
+            --btn-outline-primary-light-hover-bg: rgba(13, 110, 253, 0.1);
+            --btn-outline-primary-dark-hover-bg-rgba: rgba(110, 168, 254, 0.15); */
+        }
+
+        /* 深色主题颜色定义 */
+        html[data-bs-theme="dark"] {
+            --bs-body-bg: #121212;
+            --bs-body-color: #e0e0e0;
+            --bs-border-color: #444;
+
+            /* 按钮 */
+            --bs-btn-bg: #1f1f1f;
+            --bs-btn-color: #e0e0e0;
+            --bs-btn-border-color: #333;
+
+            /* 主要按钮 */
+            --bs-primary: #6ea8fe;
+            --bs-btn-hover-bg: #0a58ca;
+            --bs-btn-hover-border-color: #0a58ca;
+
+            /* 输入框 */
+            --bs-input-bg: #1f1f1f;
+            --bs-input-color: #e0e0e0;
+            --bs-input-border-color: #333;
+            --bs-input-focus-border-color: #6ea8fe;
+            --bs-input-focus-box-shadow: 0 0 0 0.2rem rgba(110, 168, 254, 0.25);
+
+            /* 卡片/容器背景 */
+            --bs-card-bg: #1e1e1e;
+            --bs-secondary-bg: #252525;
+
+            /* 链接 */
+            --bs-link-color: #6ea8fe;
+            --bs-link-hover-color: #9ec5fe;
+
+            /* 徽章 */
+            --bs-badge-bg: #2a2a2a;
+            --bs-badge-color: #e0e0e0;
+        }
+
+        html[data-bs-theme="dark"] .btn-outline-primary {
+            --bs-btn-color: #595d62;
+            --bs-btn-border-color: #44484e;
+        }
+
+        body {
+            transition: background-color 0.3s ease, color 0.3s ease;
+        }
+
+        a {
+            color: inherit;
+            text-decoration: none;
+        }
+
+        a:active, a:hover {
+            color: #0f55ab;
+        }
+
+        /* 未选中时的按钮悬停颜色 */
+        .btn-check:not(:checked)+.btn:hover {
+            background-color:#b2d0fa;
+        }
+
+        .container-lg {
+            transition: background-color 0.3s ease;
+        }
+
         #cameraDiv {
             display: flex;
             flex-direction: row;
@@ -26,25 +101,37 @@
             column-gap: 2rem;
             margin-bottom: 8px;
         }
-        #cameraDiv > label {
-            transition: all 0.5s ease;
-        }
 
-        #cameraDiv > input:checked + label {
-            box-shadow: 0 2px 8px rgba(13, 110, 253, 0.9);
+        #cameraDiv > label {
+            transition: all 0.3s ease;
         }
+        /*#cameraDiv > label:hover {*/
+        /*    color: #60a5fa;*/
+        /*}*/
+
+        /*#cameraDiv > input:checked + label {*/
+        /*    box-shadow: 0 2px 8px rgba(13, 110, 253, 0.9);*/
+        /*}*/
+
         #cameraDiv > input:checked + label > i {
             animation: blueGreenFade 1s ease-in-out infinite alternate;
         }
+
         /*蓝绿闪烁*/
         @keyframes blueGreenFade {
-            from { color: #0f0; }
-            to { color: #00f; }
+            from {
+                color: #0f0;
+            }
+            to {
+                color: #00f;
+            }
         }
+
         /*默认是空心图标*/
         .dynamic-camera-icon::before {
-            content:"\f21f"
+            content: "\f21f"
         }
+
         /*选中后变成实心图标*/
         #cameraDiv > input:checked + label > .dynamic-camera-icon::before {
             content: "\f21c";
@@ -70,11 +157,9 @@
         }
 
         .badge-my1 {
-            background-color: #6c757d;
             padding: 4px;
             vertical-align: middle;
-            border: 1px solid black;
-            color: white;
+            border: 1px solid;
         }
 
         .font1 {
@@ -117,20 +202,6 @@
             /*padding: 8px 0;*/
         }
 
-        .btn-logout {
-            background: #6c757d;
-            color: #fff;
-            padding: 6px 14px;
-            border-radius: 6px;
-            font-size: 13px;
-            font-weight: 500;
-        }
-
-        .btn-logout:hover {
-            transform: translateY(-1px);
-            box-shadow: 0 3px 10px rgba(102, 126, 234, 0.25);
-            /* color: white; */
-        }
 
         .header-left {
             display: flex;
@@ -150,12 +221,8 @@
         }
 
         .ip-badge {
-            background-color: #f8f9fa;
-            border: 1px solid #e9ecef;
-            border-radius: 6px;
             padding: 5px 11px;
             font-size: 13px;
-            color: #6c757d;
             display: flex;
             align-items: center;
             gap: 5px;
@@ -164,6 +231,16 @@
         .ip-badge i {
             color: #667eea;
             font-size: 14px;
+        }
+
+
+        #dateTimeSelectDiv {
+            background-color: inherit;
+            border-color: #0d6efd;
+        }
+
+        #controlBar {
+            background-color: inherit;
         }
 
         @media screen and (max-width: 992px) {
@@ -210,7 +287,10 @@
                 <i class="bi bi-globe"></i>
                 <span id="ipAddress">加载中...</span>
             </div>
-            <button class="btn btn-logout" onclick="logout()">
+            <button class="btn btn-outline-secondary" id="themeToggle" onclick="toggleTheme()">
+                <i class="bi bi-moon"></i> <span class="nothing">深色模式</span>
+            </button>
+            <button class="btn btn-outline-secondary" onclick="logout()">
                 <i class="bi bi-box-arrow-right"></i> <span class="nothing">退出登录</span>
             </button>
         </div>
@@ -224,7 +304,7 @@
     </div>
 </div>
 
-<div id="dateTimeSelectDiv" class="container-lg border border-primary rounded-3 pd-10">
+<div id="dateTimeSelectDiv" class="container-lg border rounded-3 pd-10">
     <div>
         <a id="dateDiv-a" href="#dateDiv" data-bs-toggle="collapse" class="h5 bi fold-display">日期</a>
         <span id="dateSelect" class="datetime-sel">-</span>
@@ -305,7 +385,7 @@
     </button>
 </div>
 
-<div class="a-center">
+<div class="a-center mb-5">
     <video id="cVideo" controls="true" src="">
         您的浏览器不支持 HTML5 video 标签。
     </video>
@@ -322,23 +402,23 @@
 
     $.ajaxSetup({
         statusCode: {
-            401: function() {
+            401: function () {
                 window.location.href = '/auth/login';
             },
-            403: function() {
+            403: function () {
                 window.location.href = '/auth/login';
             }
         }
     });
 
-    document.addEventListener('visibilitychange', function() {
+    document.addEventListener('visibilitychange', function () {
         if (!document.hidden) {
             checkSession();
         }
     });
 
     function checkSession() {
-        $.get("/auth/check").fail(function(xhr) {
+        $.get("/auth/check").fail(function (xhr) {
             if (xhr.status === 401 || xhr.status === 403 || xhr.status === 0) {
                 window.location.href = '/auth/login';
             }
@@ -350,6 +430,7 @@
         initVideoWidth();
         initCamera();
         loadIpAddress();
+        initTheme();
     });
 
     function initVideoWidth() {
@@ -389,7 +470,7 @@
             });
             $('#camera-0').attr("checked", 'checked');
             onCameraChange();
-        }).fail(function() {
+        }).fail(function () {
             $("#cameraDiv").html('<div class="text-center text-danger p-3">加载摄像头列表失败，请检查后端服务是否正常运行</div>');
         });
     }
@@ -589,10 +670,10 @@
             $.ajax({
                 url: '/auth/logout',
                 method: 'POST',
-                success: function() {
+                success: function () {
                     window.location.href = '/auth/login';
                 },
-                error: function() {
+                error: function () {
                     // 即使失败也跳转到登录页
                     window.location.href = '/auth/login';
                 }
@@ -601,15 +682,55 @@
     }
 
     function loadIpAddress() {
-        $.get("/auth/ip", function(result) {
+        $.get("/auth/ip", function (result) {
             if (result.ip) {
                 $("#ipAddress").text(result.ip);
             } else {
                 $("#ipAddress").text("未知");
             }
-        }).fail(function() {
+        }).fail(function () {
             $("#ipAddress").text("获取失败");
         });
+    }
+
+    /**
+     * 初始化主题设置
+     * 从 localStorage 读取用户之前选择的主题偏好
+     */
+    function initTheme() {
+        const savedTheme = localStorage.getItem('theme') || 'light';
+        applyTheme(savedTheme);
+    }
+
+    /**
+     * 切换主题
+     * 在浅色和深色主题之间切换
+     */
+    function toggleTheme() {
+        const currentTheme = document.documentElement.getAttribute('data-bs-theme') || 'light';
+        const newTheme = currentTheme === 'light' ? 'dark' : 'light';
+        applyTheme(newTheme);
+    }
+
+    /**
+     * 应用主题
+     * @param {string} theme - 主题名称 ('light' 或 'dark')
+     */
+    function applyTheme(theme) {
+        document.documentElement.setAttribute('data-bs-theme', theme);
+        localStorage.setItem('theme', theme);
+
+        const themeBtn = document.getElementById('themeToggle');
+        const icon = themeBtn.querySelector('i');
+        const text = themeBtn.querySelector('span');
+
+        if (theme === 'dark') {
+            icon.className = 'bi bi-sun';
+            text.textContent = '浅色模式';
+        } else {
+            icon.className = 'bi bi-moon';
+            text.textContent = '深色模式';
+        }
     }
 </script>
 
