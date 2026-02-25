@@ -15,80 +15,53 @@
     <link href="/bootstrap/icons/font/bootstrap-icons.min.css" rel="stylesheet">
 
     <style>
-
+        /* 浅色主题颜色定义 */
         :root {
+            /* 边框颜色 */
             --bs-border-color: #0d6efd;
-
-            /* --bs-btn-bg: #000;
-            --bs-btn-background: #000;
-            --btn-outline-primary-dark-color: #6ea8fe;
-            --btn-outline-primary-dark-hover-bg: #0a58ca;
-            --btn-outline-primary-checked-shadow: rgba(110, 168, 254, 0.9);
-            --btn-outline-primary-light-hover-bg: rgba(13, 110, 253, 0.1);
-            --btn-outline-primary-dark-hover-bg-rgba: rgba(110, 168, 254, 0.15); */
+            /* 未选中按钮悬停背景颜色 */
+            --btn-hover-bg-color: #b2d0fa;
         }
 
         /* 深色主题颜色定义 */
         html[data-bs-theme="dark"] {
-            --bs-body-bg: #121212;
-            --bs-body-color: #e0e0e0;
+            /* 整体背景颜色 */
+            /*--bs-body-bg: #121212;*/
+            /* 整体文字颜色 */
+            /*--bs-body-color: #e0e0e0;*/
+            /* 边框颜色 */
             --bs-border-color: #444;
-
-            /* 按钮 */
-            --bs-btn-bg: #1f1f1f;
-            --bs-btn-color: #e0e0e0;
-            --bs-btn-border-color: #333;
-
-            /* 主要按钮 */
-            --bs-primary: #6ea8fe;
-            --bs-btn-hover-bg: #0a58ca;
-            --bs-btn-hover-border-color: #0a58ca;
-
-            /* 输入框 */
-            --bs-input-bg: #1f1f1f;
-            --bs-input-color: #e0e0e0;
-            --bs-input-border-color: #333;
-            --bs-input-focus-border-color: #6ea8fe;
-            --bs-input-focus-box-shadow: 0 0 0 0.2rem rgba(110, 168, 254, 0.25);
-
-            /* 卡片/容器背景 */
-            --bs-card-bg: #1e1e1e;
-            --bs-secondary-bg: #252525;
-
-            /* 链接 */
-            --bs-link-color: #6ea8fe;
-            --bs-link-hover-color: #9ec5fe;
-
-            /* 徽章 */
-            --bs-badge-bg: #2a2a2a;
-            --bs-badge-color: #e0e0e0;
+            
+            /* 未选中按钮悬停背景颜色 */
+            --btn-hover-bg-color: #1552a0;
         }
 
         html[data-bs-theme="dark"] .btn-outline-primary {
-            --bs-btn-color: #595d62;
-            --bs-btn-border-color: #44484e;
+            --bs-btn-color: #a4a7a9;
+            --bs-btn-border-color: #6c727a;
+            /* 选中按钮背景颜色 */
+            /* --bs-btn-active-bg: #25426e; */
         }
 
         body {
             transition: background-color 0.3s ease, color 0.3s ease;
         }
+        input {
+            transition: background-color 1.3s ease, color 0.3s ease;
+        }
 
-        a {
-            color: inherit;
+        #dateTimeSelectDiv a {
+            color: rgb(19 111 254);
             text-decoration: none;
         }
 
-        a:active, a:hover {
+        #dateTimeSelectDiv a:active, #dateTimeSelectDiv a:hover {
             color: #0f55ab;
         }
 
         /* 未选中时的按钮悬停颜色 */
         .btn-check:not(:checked)+.btn:hover {
-            background-color:#b2d0fa;
-        }
-
-        .container-lg {
-            transition: background-color 0.3s ease;
+            background-color: var(--btn-hover-bg-color);
         }
 
         #cameraDiv {
@@ -98,7 +71,7 @@
             justify-content: space-around;
             gap: 10px;
             row-gap: 5px;
-            column-gap: 2rem;
+            /* column-gap: 2rem; */
             margin-bottom: 8px;
         }
 
@@ -261,16 +234,23 @@
                 width: 38px;
                 height: 38px;
             }
+            
+            .header-left .h4 {
+                font-size: 18px;
+            }
+        }
+        .display-on-mobile {
+            display: none;
         }
 
         @media screen and (max-width: 420px) {
             .unimportant {
                 display: none;
             }
-
-            .header-left .h4 {
-                font-size: 18px;
+            .display-on-mobile {
+                display: block;
             }
+
         }
     </style>
 
@@ -280,7 +260,9 @@
     <div class="header-bar">
         <div class="header-left">
             <img src="/images/camera.svg" alt="摄像头图标" class="header-icon">
-            <p class="h4 mb-0">小米摄像头 NAS 视频查看工具</p>
+            <p class="h4 mb-0 unimportant">小米摄像头 NAS 视频查看工具</p>
+            <p class="h4 mb-0 display-on-mobile">摄像头视频查看工具</p>
+
         </div>
         <div class="header-right">
             <div class="ip-badge">
@@ -366,7 +348,7 @@
     </div>
 
     <div>
-        <button class="btn btn-outline-dark" onclick="slowDown()">
+        <button class="btn btn-outline-secondary" onclick="slowDown()">
             <i class="bi bi-skip-backward"><span class="nothing">慢放</span></i>
         </button>
         <button class="btn btn-outline-success" onclick="normalSpeed()">
