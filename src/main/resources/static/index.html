@@ -43,11 +43,45 @@
             /* --bs-btn-active-bg: #25426e; */
         }
 
+        /* 自定义 badge 样式 - 浅色模式保持原样，深色模式变暗 */
+        .badge-custom {
+            background-color: #f8f9fa;
+            color: #212529;
+            transition: background-color 0.3s ease, color 0.3s ease;
+        }
+
+        html[data-bs-theme="dark"] .badge-custom {
+            background-color: #495057;
+            color: #f8f9fa;
+        }
+
+        /* 自定义下载按钮样式 - 浅色模式保持原样，深色模式适配 */
+        .btn-download {
+            background-color: #f8f9fa;
+            color: #212529;
+            border-color: #dee2e6;
+            transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease;
+        }
+
+        .btn-download:hover {
+            background-color: #e9ecef;
+        }
+
+        html[data-bs-theme="dark"] .btn-download {
+            background-color: #343a40;
+            color: #f8f9fa;
+            border-color: #495057;
+        }
+
+        html[data-bs-theme="dark"] .btn-download:hover {
+            background-color: #495057;
+        }
+
         body {
             transition: background-color 0.3s ease, color 0.3s ease;
         }
         input {
-            transition: background-color 1.3s ease, color 0.3s ease;
+            transition: background-color 0.3s ease, color 0.3s ease;
         }
 
         #dateTimeSelectDiv a {
@@ -132,7 +166,15 @@
         .badge-my1 {
             padding: 4px;
             vertical-align: middle;
-            border: 1px solid;
+            border: 1px solid black;
+            background-color: #6c757d;
+            color: white;
+        }
+
+        .badge-style {
+            height: 28px;
+            align-content: center;
+            vertical-align: middle;
         }
 
         .font1 {
@@ -214,6 +256,17 @@
 
         #controlBar {
             background-color: inherit;
+            border-color: #dee2e6 !important;
+        }
+
+        html[data-bs-theme="dark"] #controlBar {
+            border-color: #495057 !important;
+        }
+
+        /* 头部按钮缩小 */
+        #themeToggle, .header-right .btn-outline-secondary {
+            padding: 0.25rem 0.5rem;
+            font-size: 0.875rem;
         }
 
         @media screen and (max-width: 992px) {
@@ -342,7 +395,7 @@
         <button class="btn btn-secondary" onclick="makeNormal()">
             <i class="bi bi-fullscreen-exit"><span class="nothing">普通</span></i>
         </button>
-        <span class="badge rounded-pill bg-light text-dark font1" style="min-width: 125px">
+        <span class="badge badge-custom font1 badge-style" style="min-width: 125px">
             <i id="txtVideoWidth" class="bi bi-aspect-ratio">-</i>
         </span>
     </div>
@@ -357,12 +410,12 @@
         <button class="btn btn-outline-primary" onclick="speedUp()">
             <i class="bi bi-skip-forward"><span class="nothing">快放</span></i>
         </button>
-        <span class="badge rounded-pill bg-light text-dark" style="width: 60px">
+        <span class="badge badge-custom badge-style" style="width: 60px">
             <span id="txtVideoRate">1</span>倍速
         </span>
     </div>
 
-    <button class="btn btn-light" onclick="downloadVideo()">
+    <button class="btn btn-download" onclick="downloadVideo()">
         <i class="bi bi-cloud-download"><span class="nothing">下载视频</span></i>
     </button>
 </div>
