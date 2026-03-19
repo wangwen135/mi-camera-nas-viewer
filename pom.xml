@@ -13,7 +13,7 @@
 
     <groupId>com.wwh.camera</groupId>
     <artifactId>mi-camera-nas-viewer</artifactId>
-    <version>1.0.0</version>
+    <version>1.0.1</version>
     <name>mi-camera-nas-viewer</name>
     <description>小米摄像头NAS视频查看工具</description>
 
@@ -69,6 +69,12 @@
             <groupId>com.alibaba.fastjson2</groupId>
             <artifactId>fastjson2</artifactId>
             <version>2.0.33</version>
+        </dependency>
+
+        <!-- Spring Security Crypto (密码加密) -->
+        <dependency>
+            <groupId>org.springframework.security</groupId>
+            <artifactId>spring-security-crypto</artifactId>
         </dependency>
 
         <!-- Spring Boot Test -->

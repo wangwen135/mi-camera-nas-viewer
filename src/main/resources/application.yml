@@ -34,6 +34,14 @@ camera:
 # ====================
 security:
   # 访问密码
+  # 支持两种模式：
+  #   1. 明文模式：直接填写明文密码（如：admin123）
+  #   2. 密文模式：填写 BCrypt 加密后的密码（以 $2a$ 开头），推荐使用
+  #
+  # 生成加密密码的方法：
+  #   方式1（推荐）: 运行 encrypt-password.bat/sh 脚本
+  #   方式2: 使用 java 命令: java -jar mi-camera-nas-viewer-1.0.1.jar --encrypt 你的密码
+  #   方式3: 在线工具: https://bcrypt-generator.com/ 或 https://bcrypt.cn/
   password: admin123
   # Session 过期时间（秒），默认30分钟
   session-timeout: 1800

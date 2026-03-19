@@ -65,6 +65,48 @@ security:
 
 **⚠️ 安全提示**：务必修改默认密码，建议使用强密码（包含大小写字母、数字、特殊字符）。
 
+### 密码加密（推荐）
+
+为了提高安全性，程序支持使用 BCrypt 加密后的密码。将加密后的密文配置到 `application.yml` 中，即使配置文件被泄露，原始密码也不会暴露。
+
+#### 加密方法
+
+1. **使用提供的脚本**（推荐）
+
+   ```bash
+   # Windows: 双击运行或命令行
+   encrypt-password.bat 你的密码
+
+   # Linux/Mac
+   chmod +x encrypt-password.sh && ./encrypt-password.sh 你的密码
+   ```
+
+2. **使用 java 命令**
+
+   ```bash
+   # 交互模式
+   java -jar mi-camera-nas-viewer-1.0.1.jar --encrypt
+
+   # 命令行模式
+   java -jar mi-camera-nas-viewer-1.0.1.jar --encrypt 你的密码
+   ```
+
+3. **使用在线工具**
+
+   访问 https://bcrypt-generator.com/ 或 https://bcrypt.cn/
+
+4. **配置加密后的密码**
+
+   将生成的密文复制到 `application.yml` 的 `security.password` 配置项：
+
+   ```yaml
+   security:
+     # BCrypt 加密后的密码（以 $2a$ 开头）
+     password: $2a$10$rKvYL.hK6LXLZXLZXLZXLZXLZXLZXLZXLZXLZXLZXLZXLZXLZXLZ
+   ```
+
+程序会自动识别：如果密码以 `$2a$` 开头则使用 BCrypt 验证，否则使用明文比较。
+
 ### 4. 启动程序
 
 - **Windows**: 双击运行 `start.bat`

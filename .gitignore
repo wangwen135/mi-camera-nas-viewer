@@ -29,3 +29,8 @@ Thumbs.db
 *.log
 logs/
 CLAUDE.md
+/.claude/
+
+# Built JARs
+*.jar
+

@@ -14,9 +14,8 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.context.request.WebRequest;
 
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.time.Duration;
-import java.util.Arrays;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -64,17 +63,7 @@ public class CameraVideoController {
      */
     @GetMapping("/video/date")
     public List<String> getVideoDate(@RequestParam String code) {
-        File baseDir = new File(cameraProperties.getBasePath());
-        File videoDir = new File(baseDir, code);
-        String[] dayHours = videoDir.list();
-        if (dayHours == null) {
-            return Collections.emptyList();
-        }
-        return Arrays.stream(dayHours)
-                .map(ymmddhh -> ymmddhh.substring(0, 8))
-                .sorted()
-                .distinct()
-                .collect(Collectors.toList());
+        return cameraVideoService.getVideoDates(code);
     }
 
     /**
@@ -86,16 +75,7 @@ public class CameraVideoController {
      */
     @GetMapping("/video/hour")
     public List<String> getVideoHour(@RequestParam String code, @RequestParam String date) {
-        File baseDir = new File(cameraProperties.getBasePath());
-        File videoDir = new File(baseDir, code);
-        String[] dayHours = videoDir.list((dir, name) -> name.startsWith(date));
-        if (dayHours == null) {
-            return Collections.emptyList();
-        }
-        return Arrays.stream(dayHours)
-                .map(x -> x.substring(8))
-                .sorted()
-                .collect(Collectors.toList());
+        return cameraVideoService.getVideoHours(code, date);
     }
 
     /**
@@ -108,17 +88,7 @@ public class CameraVideoController {
      */
     @GetMapping("/video/minute")
     public List<String> getVideoMinute(@RequestParam String code, @RequestParam String date, @RequestParam String hour) {
-        File baseDir = new File(cameraProperties.getBasePath());
-        File videoDir = new File(baseDir, code);
-        File ymdhDir = new File(videoDir, date + hour);
-        String[] minutes = ymdhDir.list();
-        if (minutes == null) {
-            return Collections.emptyList();
-        }
-        return Arrays.stream(minutes)
-                .map(x -> x.substring(0, 2))
-                .sorted()
-                .collect(Collectors.toList());
+        return cameraVideoService.getVideoMinutes(code, date, hour);
     }
 
     /**
@@ -153,40 +123,34 @@ public class CameraVideoController {
             }
         }
 
-        // 查找视频文件
-        File baseDir = new File(cameraProperties.getBasePath());
-        File videoDir = new File(baseDir, code);
-        File ymdhDir = new File(videoDir, date + hour);
-        File[] videoFile = ymdhDir.listFiles((dir, name) -> name.startsWith(minute));
+        try {
+            // 查找视频文件
+            File file = cameraVideoService.getVideoFile(code, date, hour, minute);
+            String fileName = date + "-" + hour + "-" + minute + ".mp4";
 
-        if (videoFile == null || videoFile.length == 0) {
-            log.warn("视频文件没有找到，路径：{}，分钟：{}", ymdhDir.getAbsolutePath(), minute);
-            return new ResponseEntity<>("video file not found", HttpStatus.NOT_FOUND);
-        }
-
-        // 每分钟只有一个文件
-        File file = videoFile[0];
-        String fileName = date + "-" + hour + "-" + minute + ".mp4";
-
-        // 支持断点续传和缓存
-        if ("download".equals(op)) {
-            // 下载模式
-            return ResponseEntity.ok()
-                    .contentType(MediaType.APPLICATION_OCTET_STREAM)
-                    .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=" + fileName)
-                    .body(new FileSystemResource(file));
-        } else {
-            // 播放模式
-            return ResponseEntity.ok()
-                    .contentType(MediaType.valueOf("video/mp4"))
-                    .cacheControl(org.springframework.http.CacheControl
-                            .maxAge(Duration.ofMinutes(5))
-                            .noTransform()
-                            .mustRevalidate()
-                            .cachePrivate())
-                    .eTag(etag)
-                    .lastModified(file.lastModified())
-                    .body(new FileSystemResource(file));
+            // 支持断点续传和缓存
+            if ("download".equals(op)) {
+                // 下载模式
+                return ResponseEntity.ok()
+                        .contentType(MediaType.APPLICATION_OCTET_STREAM)
+                        .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=" + fileName)
+                        .body(new FileSystemResource(file));
+            } else {
+                // 播放模式
+                return ResponseEntity.ok()
+                        .contentType(MediaType.valueOf("video/mp4"))
+                        .cacheControl(org.springframework.http.CacheControl
+                                .maxAge(Duration.ofMinutes(5))
+                                .noTransform()
+                                .mustRevalidate()
+                                .cachePrivate())
+                        .eTag(etag)
+                        .lastModified(file.lastModified())
+                        .body(new FileSystemResource(file));
+            }
+        } catch (FileNotFoundException e) {
+            log.warn("视频文件没有找到：{}", e.getMessage());
+            return new ResponseEntity<>(e.getMessage(), HttpStatus.NOT_FOUND);
         }
     }
 }

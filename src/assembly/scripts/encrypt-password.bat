@@ -1,38 +1,47 @@
 @echo off
-chcp 65001 >nul
 setlocal
 
 echo ===============================================
-echo        小米摄像头 NAS 视频查看工具
-echo            密码加密工具
+echo     Mi Camera NAS Viewer
+echo       Password Encryption Tool
 echo ===============================================
 echo.
 
-REM 查找 JAR 包
-set JAR_FILE=
+REM Find main JAR file
+set "JAR_FILE="
 for %%f in (mi-camera-nas-viewer-*.jar) do (
     set "JAR_FILE=%%f"
     goto :found_jar
 )
 
-echo 错误：未找到 JAR 包！
-echo 请确保在包含 mi-camera-nas-viewer-x.x.x.jar 的目录中运行此脚本
+echo ERROR: mi-camera-nas-viewer-*.jar not found!
+echo.
+echo Please ensure this script is run in the directory containing the JAR file
+echo.
+echo Alternative:
+echo   Online tool (recommended): Visit https://bcrypt-generator.com/
 pause
 exit /b 1
 
 :found_jar
-echo 找到 JAR 包: %JAR_FILE%
+echo JAR file found: %JAR_FILE%
 echo.
 
-if "%~1"=="" (
-    echo 交互模式：请在下方输入要加密的密码
-    echo.
-    java -cp "%JAR_FILE%" com.wwh.camera.util.PasswordEncoderUtil
+if "%~2"=="" (
+    if "%~1"=="" (
+        echo Interactive mode: Enter password below to encrypt
+        echo.
+        java -jar "%JAR_FILE%" --encrypt
+    ) else (
+        echo Command line mode: Encrypt specified password
+        echo.
+        java -jar "%JAR_FILE%" --encrypt %~1
+    )
 ) else (
-    echo 命令行模式：加密指定的密码
-    java -cp "%JAR_FILE%" com.wwh.camera.util.PasswordEncoderUtil %*
+    echo Command line mode: Encrypt specified password
+    echo.
+    java -jar "%JAR_FILE%" --encrypt %*
 )
 
-echo.
 echo.
 pause

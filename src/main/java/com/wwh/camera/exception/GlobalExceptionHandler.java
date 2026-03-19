@@ -1,6 +1,7 @@
 package com.wwh.camera.exception;
 
 import lombok.extern.slf4j.Slf4j;
+import org.apache.catalina.connector.ClientAbortException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ControllerAdvice;
@@ -8,6 +9,7 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.servlet.NoHandlerFoundException;
 
 import javax.servlet.http.HttpServletRequest;
+import java.io.FileNotFoundException;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -19,6 +21,17 @@ import java.util.Map;
 @Slf4j
 @ControllerAdvice
 public class GlobalExceptionHandler {
+
+    /**
+     * 处理客户端断开连接异常
+     * <p>
+     * 这是用户主动取消请求导致的（如切换视频、关闭页面、暂停播放等），
+     * 不是真正的错误，所以只记录 DEBUG 级别日志
+     */
+    @ExceptionHandler(ClientAbortException.class)
+    public void handleClientAbort(ClientAbortException ex, HttpServletRequest request) {
+        log.debug("客户端断开连接，请求路径：{}", request.getRequestURI());
+    }
 
     /**
      * 处理所有未捕获的异常

@@ -2,6 +2,7 @@ package com.wwh.camera.controller;
 
 import com.wwh.camera.config.SecurityProperties;
 import com.wwh.camera.util.IpLockUtil;
+import com.wwh.camera.util.PasswordEncoderUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -57,8 +58,8 @@ public class LoginController {
             return result;
         }
 
-        // 验证密码
-        if (!securityProperties.getPassword().equals(password)) {
+        // 验证密码（支持明文和 BCrypt 密文）
+        if (!PasswordEncoderUtil.matches(password, securityProperties.getPassword())) {
             // 记录失败
             boolean locked = IpLockUtil.recordFail(ip, securityProperties.getMaxFailCount(), securityProperties.getLockTime());
             int remainingAttempts = IpLockUtil.getRemainingAttempts(ip, securityProperties.getMaxFailCount());
