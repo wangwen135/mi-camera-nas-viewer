@@ -476,9 +476,14 @@
 </div>
 
 <div class="a-center mb-5">
-    <video id="cVideo" controls="true" src="">
-        您的浏览器不支持 HTML5 video 标签。
-    </video>
+    <!-- 视频容器，用于固定高度防止页面跳动 -->
+    <div id="videoContainer">
+        <video id="cVideo" controls="true" src="">
+            您的浏览器不支持 HTML5 video 标签。
+        </video>
+    </div>
+    <!-- 预加载用，隐藏 -->
+    <video id="preloadVideo" style="display:none"></video>
 </div>
 
 <!-- jQuery -->
@@ -488,6 +493,8 @@
 
 <script>
     const myVideo = document.getElementById("cVideo");
+    const videoContainer = document.getElementById("videoContainer");
+    const preloadVideo = document.getElementById("preloadVideo");
     const loadingOverlay = document.getElementById("loadingOverlay");
     window.onresize = initVideoWidth;
 
@@ -549,6 +556,16 @@
         let divWidth = document.querySelector("#dateTimeSelectDiv").clientWidth;
         myVideo.width = divWidth;
         updateVideoWidthTxt();
+        // 延时固定容器高度
+        setTimeout(fixContainerHeight, 200);
+    }
+
+    // 固定容器高度，防止页面塌陷
+    function fixContainerHeight() {
+        let height = myVideo.clientHeight;
+        if (height > 0) {
+            videoContainer.style.minHeight = height + "px";
+        }
     }
 
     function minScreenFold() {
@@ -676,14 +693,45 @@
         downloadVideoUrl = url + "?op=download";
 
         let oldRate = myVideo.playbackRate;
-        myVideo.src = url;
-        myVideo.load();
-        myVideo.playbackRate = oldRate;
 
         if (firstLoad) {
+            // 首次加载，直接设置源
+            myVideo.src = url;
             firstLoad = false;
         } else {
-            myVideo.play();
+            // 使用预加载机制，避免闪烁
+            // 容器高度已固定，不需要额外处理
+            preloadVideo.src = url;
+            preloadVideo.load();
+
+            // 等待预加载完成后，再切换到主视频
+            preloadVideo.onloadedmetadata = function() {
+                // 保持当前播放速率
+                let currentRate = myVideo.playbackRate;
+                // 切换源，此时视频已经在缓存中
+                myVideo.src = url;
+                myVideo.playbackRate = currentRate;
+                // 播放
+                const playPromise = myVideo.play();
+                if (playPromise !== undefined) {
+                    playPromise.catch(error => {
+                        console.log("播放等待:", error);
+                    });
+                }
+                // 清空预加载视频
+                preloadVideo.src = "";
+            };
+
+            // 处理加载失败的情况
+            preloadVideo.onerror = function() {
+                console.log("预加载失败，直接切换");
+                let currentRate = myVideo.playbackRate;
+                myVideo.src = url;
+                myVideo.playbackRate = currentRate;
+                myVideo.play().catch(error => {
+                    console.log("播放等待:", error);
+                });
+            };
         }
     }
 
@@ -761,17 +809,27 @@
 
     function makeBig() {
         if (myVideo.clientWidth >= 10080) return;
+        // 清除固定高度，让视频自适应
+        videoContainer.style.minHeight = "";
         myVideo.width = myVideo.clientWidth + 100;
         updateVideoWidthTxt();
+        // 延时固定容器高度
+        setTimeout(fixContainerHeight, 200);
     }
 
     function makeSmall() {
         if (myVideo.clientWidth <= 100) return;
+        // 清除固定高度，让视频自适应
+        videoContainer.style.minHeight = "";
         myVideo.width = myVideo.clientWidth - 100;
         updateVideoWidthTxt();
+        // 延时固定容器高度
+        setTimeout(fixContainerHeight, 200);
     }
 
     function makeNormal() {
+        // 清除固定高度，让视频自适应
+        videoContainer.style.minHeight = "";
         initVideoWidth();
     }
 
