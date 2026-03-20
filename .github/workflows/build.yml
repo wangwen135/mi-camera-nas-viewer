@@ -1,0 +1,32 @@
+name: Build
+
+on:
+  push:
+    branches: [ main, master ]
+  pull_request:
+    branches: [ main, master ]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout 代码
+        uses: actions/checkout@v4
+
+      - name: 设置 JDK 8
+        uses: actions/setup-java@v4
+        with:
+          java-version: '8'
+          distribution: 'temurin'
+          cache: maven
+
+      - name: 构建项目
+        run: mvn clean package -DskipTests
+
+      - name: 上传分发包
+        uses: actions/upload-artifact@v4
+        with:
+          name: mi-camera-nas-viewer-${{ github.sha }}
+          path: target/*-bin.*
+          retention-days: 30
