@@ -1,0 +1,60 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - 'v*'
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout 代码
+        uses: actions/checkout@v4
+
+      - name: 设置 JDK 8
+        uses: actions/setup-java@v4
+        with:
+          java-version: '8'
+          distribution: 'temurin'
+          cache: maven
+
+      - name: 构建项目
+        run: mvn clean package -DskipTests
+
+      - name: 获取版本号和 Tag 注释
+        id: get_version
+        run: |
+          VERSION=${GITHUB_REF#refs/tags/}
+          echo "VERSION=$VERSION" >> $GITHUB_OUTPUT
+          echo "NOTES<<EOF" >> $GITHUB_OUTPUT
+          git tag -l "$VERSION" --format="%(contents)" >> $GITHUB_OUTPUT || echo "暂无更新说明" >> $GITHUB_OUTPUT
+          echo "EOF" >> $GITHUB_OUTPUT
+
+      - name: 创建 GitHub Release 并上传产物
+        uses: softprops/action-gh-release@v2
+        with:
+          name: Release ${{ steps.get_version.outputs.VERSION }}
+          body: |
+            ## mi-camera-nas-viewer ${{ steps.get_version.outputs.VERSION }}
+
+            ${{ steps.get_version.outputs.NOTES }}
+
+            ---
+            ### 下载说明
+            - **tar.gz** / **zip**: 两个包内容相同，根据系统习惯选择即可
+            - 解压后运行 `start.sh` (Linux/Mac) 或 `start.bat` (Windows) 即可启动服务
+
+            ### 系统要求
+            - Java 8 或更高版本
+          files: |
+            target/*-bin.tar.gz
+            target/*-bin.zip
+          draft: false
+          prerelease: false
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
