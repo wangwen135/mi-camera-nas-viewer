@@ -24,9 +24,16 @@ jobs:
       - name: 构建项目
         run: mvn clean package -DskipTests
 
-      - name: 上传分发包
+      - name: 上传 TAR.GZ 分发包
         uses: actions/upload-artifact@v4
         with:
-          name: mi-camera-nas-viewer-${{ github.sha }}
-          path: target/*-bin.*
+          name: mi-camera-nas-viewer-${{ github.sha }}-tarball
+          path: target/*-bin.tar.gz
+          retention-days: 30
+
+      - name: 上传 ZIP 分发包
+        uses: actions/upload-artifact@v4
+        with:
+          name: mi-camera-nas-viewer-${{ github.sha }}-zip
+          path: target/*-bin.zip
           retention-days: 30
