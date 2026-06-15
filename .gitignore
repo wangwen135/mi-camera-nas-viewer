@@ -34,3 +34,6 @@ CLAUDE.md
 # Built JARs
 *.jar
 
+
+# AI dev script (local only)
+dev-restart.sh

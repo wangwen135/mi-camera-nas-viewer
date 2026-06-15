@@ -7,7 +7,7 @@ if [ -z "$JAR_FILE" ]; then
     exit 1
 fi
 echo "启动: $JAR_FILE"
-nohup java -jar "$JAR_FILE" > out.log 2>&1 &
+nohup java -Xmx384m -Xms128m -jar "$JAR_FILE" > out.log 2>&1 &
 echo "Started, PID: $!"
 echo "Console log: out.log"
 echo "Application log: ./log"
